@@ -16,6 +16,17 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, "Name is required"],
     },
+    video: {
+      type: String,
+      required: false,
+    },
+    videos: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Video",
+        required: false,
+      },
+    ],
   },
   {
     timestamps: true,
