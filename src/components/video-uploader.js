@@ -1,6 +1,6 @@
+"use client";
 import {addVideoApi} from "@/api/user";
 import {UploadDropzone} from "@uploadthing/react";
-import {useRouter} from "next/navigation";
 
 export const VideoUploadDropzone = () => {
   return (

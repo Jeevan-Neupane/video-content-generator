@@ -8,19 +8,15 @@ export async function POST(request) {
   try {
     await connect();
 
+    console.log("hello");
+
     const session = await getSession();
     if (!session || !session.user) {
       return NextResponse.json({error: "Not authenticated"}, {status: 401});
     }
 
     const body = await request.json();
-    const {title, description, videoUrl} = body;
-    if (!title || !description || !videoUrl) {
-      return NextResponse.json(
-        {message: "All fields are required"},
-        {status: 401}
-      );
-    }
+    const {title, description, thumbnail, videoUrl} = body;
 
     const user = await User.findOne({auth0Id: session.user.sub});
 
@@ -28,6 +24,7 @@ export async function POST(request) {
       userId: user._id,
       title,
       description,
+      thumbnail,
       videoUrl,
     });
 

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, {use} from "react";
 import Link from "next/link";
 import {LogOut, Video, User} from "lucide-react";
 import {useUser} from "@auth0/nextjs-auth0/client";

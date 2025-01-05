@@ -13,26 +13,48 @@ function Page() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [script, setScript] = useState("");
+
   const router = useRouter();
 
-  useEffect(() => {
-    if (user) {
-      try {
-        setLoading(true);
-        axios.get(`/api/user/getUser`).then((res) => {
-          setUserData(res.data);
-          setLoading(false);
-        });
-      } catch (error) {
-        setLoading(false);
-        console.log(error);
-      }
-    }
-  }, [user]);
+const AI_URL = process.env.NEXT_PUBLIC_AI_URL;
 
-  const handleClick = () => {
-    console.log(script);
-  };
+useEffect(() => {
+  if (user) {
+    try {
+      setLoading(true);
+      axios.get(`/api/user/getUser`).then((res) => {
+        setUserData(res.data);
+        setLoading(false);
+      });
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  }
+}, [user]);
+
+const handleClick = async () => {
+  console.log(script);
+  axios
+    .post(`${AI_URL}/create`, {
+      video_script: script,
+      sample_vid_url: userData.video,
+    })
+    .then(async (aiResponse) => {
+      console.log(aiResponse.data);
+      const videoResponse = await axios.post(`/api/user/addVideos`, {
+        title: aiResponse.data.title,
+        description: script,
+        thumbnail: aiResponse.data.thumbnail_url,
+        videoUrl: aiResponse.data.video_url,
+      });
+      console.log(videoResponse.data);
+      router.push(`/video/${videoResponse.data._id}`);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
   if (isLoading || loading) {
     return (

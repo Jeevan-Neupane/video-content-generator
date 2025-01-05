@@ -6,40 +6,27 @@ import axios from "axios";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
+import {formatDate} from "@/lib/utils";
 
 function Page() {
   const {user, error, isLoading} = useUser();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [videos, setVideos] = useState(null);
+
   const router = useRouter();
 
-  // Dummy videos data
-  const dummyVideos = [
-    {
-      id: 1,
-      title: "Welcome Video",
-      url: "https://example.com/video1.mp4",
-      thumbnail: "https://picsum.photos/300/200",
-      date: "2024-01-15",
-      duration: "2:30",
-    },
-    {
-      id: 2,
-      title: "Product Demo",
-      url: "https://example.com/video2.mp4",
-      thumbnail: "https://picsum.photos/300/200",
-      date: "2024-01-14",
-      duration: "4:15",
-    },
-    {
-      id: 3,
-      title: "Tutorial Video",
-      url: "https://example.com/video3.mp4",
-      thumbnail: "https://picsum.photos/300/200",
-      date: "2024-01-13",
-      duration: "3:45",
-    },
-  ];
+  useEffect(() => {
+    axios
+      .get("/api/user/getVideos")
+      .then((res) => {
+        console.log(res.data);
+        setVideos(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -86,7 +73,7 @@ function Page() {
           </Button>
         </div>
 
-        {dummyVideos.length === 0 ? (
+        {videos?.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500 mb-4">
               You haven't created any videos yet
@@ -100,17 +87,17 @@ function Page() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dummyVideos.map((video) => (
+            {videos?.map((video) => (
               <Link
-                key={video.id}
-                href={`/video/${video.id}`}
+                key={video?._id}
+                href={`/video/${video?._id}`}
                 className="border bg-white rounded-lg overflow-hidden group hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="relative">
                   <img
-                    src={video.thumbnail}
-                    alt={video.title}
-                    className="w-full h-48 object-cover"
+                    src={video?.thumbnail}
+                    alt={video?.title}
+                    className="w-full h-48 object-contain"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <Play className="w-12 h-12 text-white" />
@@ -118,17 +105,14 @@ function Page() {
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold text-lg mb-2 text-gray-800">
-                    {video.title}
+                    {video?.title}
                   </h3>
-                  <div className="flex items-center gap-4 text-gray-500 text-sm">
+                  <div className="flex flex-col gap-2 text-gray-500 text-sm">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      <span>{video.date}</span>
+                      <span>{formatDate(video?.createdAt)}</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{video.duration}</span>
-                    </div>
+                    <p>By: {video?.userId?.name}</p>
                   </div>
                 </div>
               </Link>

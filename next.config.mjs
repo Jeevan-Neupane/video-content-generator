@@ -8,6 +8,14 @@ const nextConfig = {
     AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
     MONGO_URL: process.env.MONGO_URL,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
